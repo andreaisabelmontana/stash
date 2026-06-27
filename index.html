@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Stash · Save YouTube videos, get the gist</title>
-<meta name="description" content="Stash solves save-for-later-but-never-revisit: save a YouTube URL and it extracts the transcript and summarizes it with AI — with auth, metrics, and production DevOps. An interactive project showcase." />
+<title>Stash · Save items and summarize them extractively</title>
+<meta name="description" content="Stash saves items, ingests transcripts, and summarizes them with a real extractive engine: TextRank over TF-IDF sentence vectors, in Python. The LLM step is optional. This page runs a faithful in-browser port of the same algorithm on committed sample transcripts." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -41,45 +41,47 @@
   .hero{padding:84px 0 60px;border-bottom:1px solid var(--line)}
   .kicker{font-family:"JetBrains Mono",monospace;font-size:.74rem;letter-spacing:.18em;
     text-transform:uppercase;color:var(--accent);margin:0 0 18px}
-  .hero h1{font-size:clamp(2.4rem,5.4vw,4.2rem);margin:0 0 20px;max-width:15ch}
-  .hero p.lede{font-size:1.18rem;max-width:60ch;color:#2a2022;margin:0 0 30px}
+  .hero h1{font-size:clamp(2.4rem,5.4vw,4.2rem);margin:0 0 20px;max-width:16ch}
+  .hero p.lede{font-size:1.18rem;max-width:62ch;color:#2a2022;margin:0 0 30px}
   .cta{display:flex;gap:12px;flex-wrap:wrap}
   .btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:999px;
     font-weight:600;font-size:.9rem;border:1px solid var(--ink);background:var(--ink);color:var(--paper);
-    transition:transform .15s ease}
+    transition:transform .15s ease;cursor:pointer}
   .btn:hover{transform:translateY(-2px)}
   .btn.ghost{background:transparent;color:var(--ink)}
 
-  /* ---- stash demo ---- */
+  /* ---- live demo ---- */
   .demo{margin-top:52px;background:#fff;border:1px solid var(--line);border-radius:var(--r);
     box-shadow:var(--shadow);overflow:hidden}
-  .demo .top{padding:14px 18px;border-bottom:1px solid var(--line);background:var(--paper-2)}
+  .demo .top{padding:14px 18px;border-bottom:1px solid var(--line);background:var(--paper-2);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
   .demo .top .t{font-family:"Fraunces",serif;font-size:1rem}
-  .bar2{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
-  .bar2 .url{flex:1;min-width:200px;display:flex;align-items:center;gap:8px;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:6px 14px}
-  .bar2 .url input{border:none;outline:none;background:transparent;font-family:"JetBrains Mono",monospace;font-size:.8rem;width:100%}
-  .bar2 button{font-size:.82rem;font-weight:600;padding:9px 16px;border-radius:999px;border:none;background:var(--accent);color:#fff;cursor:pointer}
-  .examples{display:flex;gap:6px;flex-wrap:wrap;padding:10px 18px 0}
-  .examples button{font-size:.74rem;padding:5px 10px;border-radius:999px;border:1px solid var(--line);background:#fff;cursor:pointer}
-  .stashlist{padding:14px 18px 20px;display:flex;flex-direction:column;gap:12px}
-  .vid{border:1px solid var(--line);border-radius:12px;overflow:hidden;animation:pop .35s ease}
-  @keyframes pop{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
-  .vid .head{display:flex;gap:12px;padding:12px}
-  .thumb{width:120px;height:68px;border-radius:8px;flex:none;display:grid;place-items:center;color:#fff;font-size:1.6rem;position:relative}
-  .thumb .dur{position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,.7);color:#fff;font-size:.6rem;font-family:"JetBrains Mono",monospace;padding:1px 5px;border-radius:4px}
-  .vmeta .vt{font-weight:600;font-size:.94rem;line-height:1.25}
-  .vmeta .vc{font-size:.78rem;color:var(--muted)}
-  .vmeta .turl{font-size:.7rem;color:var(--muted);font-family:"JetBrains Mono",monospace;margin-top:2px}
-  .sumbox{border-top:1px solid var(--line);padding:12px 14px;background:var(--paper-2)}
-  .sumbox .lbl{font-family:"JetBrains Mono",monospace;font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-2);margin:0 0 6px;display:flex;align-items:center;gap:8px}
-  .sumbox ul{margin:0;padding-left:18px}
-  .sumbox li{font-size:.86rem;margin:3px 0}
-  .loading{font-size:.84rem;color:var(--muted);display:flex;align-items:center;gap:8px}
-  .spin{width:13px;height:13px;border:2px solid var(--line);border-top-color:var(--accent-2);border-radius:50%;animation:sp .7s linear infinite}
-  @keyframes sp{to{transform:rotate(360deg)}}
-  details.tr{margin-top:8px}
-  details.tr summary{font-size:.76rem;color:var(--muted);cursor:pointer}
-  details.tr p{font-size:.82rem;color:#4a3f3d;margin:6px 0 0}
+  .demo .top .badge{font-family:"JetBrains Mono",monospace;font-size:.64rem;letter-spacing:.04em;
+    text-transform:uppercase;color:var(--good);border:1px solid var(--line);background:#fff;
+    padding:3px 9px;border-radius:999px}
+  .ctrl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .ctrl label{font-size:.78rem;color:var(--muted)}
+  .ctrl select,.ctrl input[type=range]{font-family:"JetBrains Mono",monospace;font-size:.8rem}
+  .ctrl .seg{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+  .ctrl .seg button{font-size:.76rem;font-weight:600;padding:7px 13px;border:none;background:#fff;cursor:pointer;color:var(--muted)}
+  .ctrl .seg button.on{background:var(--accent);color:#fff}
+  .ctrl .nval{font-family:"JetBrains Mono",monospace;font-size:.8rem;min-width:1.4em;text-align:center}
+  .panel{padding:16px 18px 22px;display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:760px){.panel{grid-template-columns:1fr}}
+  .col h4{margin:0 0 8px;font-family:"JetBrains Mono",monospace;font-size:.66rem;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--accent-2)}
+  .transcript{font-size:.82rem;color:#4a3f3d;max-height:230px;overflow:auto;border:1px solid var(--line);
+    border-radius:10px;padding:10px 12px;background:var(--paper-2)}
+  .transcript .s{padding:2px 4px;border-radius:4px;transition:background .2s}
+  .transcript .s.pick{background:rgba(192,49,47,.14);box-shadow:inset 2px 0 0 var(--accent)}
+  .sumbox{border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff}
+  .sumbox ol{margin:0;padding-left:20px}
+  .sumbox li{font-size:.88rem;margin:6px 0}
+  .sumbox li .sc{font-family:"JetBrains Mono",monospace;font-size:.66rem;color:var(--muted);margin-left:4px}
+  .kw{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+  .kw .k{font-size:.74rem;padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--paper-2)}
+  .kw .k.tag{border-color:var(--accent);color:var(--accent)}
+  .note{font-size:.78rem;color:var(--muted);margin-top:10px}
 
   section{padding:74px 0;border-bottom:1px solid var(--line)}
   .eyebrow{font-family:"JetBrains Mono",monospace;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
@@ -88,6 +90,10 @@
   @media(max-width:760px){.grid3{grid-template-columns:1fr}}
   .card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:24px;box-shadow:var(--shadow)}
   .card .ic{font-size:1.5rem}.card h3{font-size:1.14rem;margin:10px 0 6px}.card p{margin:0;font-size:.92rem;color:#443b39}
+  .card code{font-size:.82rem;background:var(--paper-2);padding:1px 5px;border-radius:5px}
+  pre.code{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;overflow:auto;
+    font-family:"JetBrains Mono",monospace;font-size:.82rem;line-height:1.55;box-shadow:var(--shadow);margin-top:24px}
+  pre.code .c{color:var(--muted)}
   .chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
   .chip{padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:#fff;font-size:.85rem;font-weight:500}
   footer{padding:48px 0 70px}
@@ -102,8 +108,9 @@
   <div class="wrap">
     <div class="brand">📌 Stash</div>
     <nav class="links">
+      <a href="#demo">Live demo</a>
       <a href="#how">How it works</a>
-      <a href="#features">Features</a>
+      <a href="#use">Use it</a>
       <a href="#stack">Stack</a>
     </nav>
   </div>
@@ -111,52 +118,83 @@
 
 <div class="hero">
   <div class="wrap">
-    <p class="kicker">FastAPI · AI Summarization · Azure</p>
-    <h1>Save it for later — and actually get the gist.</h1>
-    <p class="lede">Stash tackles the “save for later but never revisit” problem. Paste a YouTube URL; it extracts the transcript, summarizes it with an LLM, and keeps everything organized — wrapped in clean DI, auth, metrics, and production DevOps.</p>
+    <p class="kicker">Extractive summarization · TextRank · TF-IDF</p>
+    <h1>Save it — and get the gist, for real.</h1>
+    <p class="lede">Stash saves items, ingests their transcripts, and summarizes them with a genuine extractive engine: <strong>TextRank over TF-IDF sentence vectors</strong>, scored by PageRank power iteration, in Python. No LLM required — that step is optional. The demo below runs a faithful in-browser port of the exact same algorithm on a committed transcript.</p>
     <div class="cta">
-      <a class="btn" href="#how">How it works →</a>
-      <a class="btn ghost" href="#stack">The stack</a>
+      <a class="btn" href="#demo">Try the live demo ↓</a>
+      <a class="btn ghost" href="https://github.com/andreaisabelmontana/stash">Source on GitHub</a>
     </div>
 
     <div class="demo" id="demo">
-      <div class="top"><div class="t">Your stash</div></div>
-      <div class="bar2">
-        <div class="url"><span aria-hidden="true">🔗</span><input id="url" type="text" value="youtu.be/dQw4-tech-talk" aria-label="YouTube URL" /></div>
-        <button id="save">＋ Save &amp; summarize</button>
+      <div class="top">
+        <div class="t">Live extractive summary</div>
+        <div class="badge">● running in your browser</div>
       </div>
-      <div class="examples" id="examples">
-        <span style="font-size:.72rem;color:var(--muted);align-self:center">try:</span>
+      <div class="ctrl">
+        <label for="doc">Transcript</label>
+        <select id="doc"></select>
+        <div class="seg" id="method" role="tablist">
+          <button data-m="textrank" class="on">TextRank</button>
+          <button data-m="tfidf">TF-IDF baseline</button>
+        </div>
+        <label for="n">Sentences</label>
+        <input id="n" type="range" min="1" max="5" value="3" />
+        <span class="nval" id="nval">3</span>
       </div>
-      <div class="stashlist" id="stashlist"></div>
+      <div class="panel">
+        <div class="col">
+          <h4>Transcript (picked sentences highlighted)</h4>
+          <div class="transcript" id="transcript"></div>
+        </div>
+        <div class="col">
+          <h4>Summary</h4>
+          <div class="sumbox"><ol id="summary"></ol></div>
+          <div class="kw" id="keywords"></div>
+          <p class="note" id="note"></p>
+        </div>
+      </div>
     </div>
-    <p style="font-size:.8rem;color:var(--muted);margin-top:10px">↑ A scripted illustration — saving a video extracts a transcript and generates an AI summary from sample data.</p>
+    <p style="font-size:.8rem;color:var(--muted);margin-top:10px">↑ The TextRank scores, keyword ranking, and sentence selection are computed live from the transcript — this is the same algorithm the Python package runs, not pre-baked text.</p>
   </div>
 </div>
 
 <section id="how">
   <div class="wrap reveal">
     <p class="eyebrow">01 — How it works</p>
-    <h2>URL in, summary out.</h2>
+    <h2>Graph centrality over sentence vectors.</h2>
     <div class="grid3">
-      <div class="card"><div class="ic">🔗</div><h3>Save a URL</h3><p>Drop in any YouTube link and Stash persists it to your library.</p></div>
-      <div class="card"><div class="ic">📝</div><h3>Extract transcript</h3><p>The backend fetches and normalizes the video's transcript.</p></div>
-      <div class="card"><div class="ic">🤖</div><h3>Summarize</h3><p>An LLM (Groq's Llama) condenses it into a quick, skimmable summary.</p></div>
+      <div class="card"><div class="ic">📥</div><h3>Ingest</h3><p>Take a transcript from text, a file, or — best-effort — a real YouTube fetch via <code>youtube-transcript-api</code>. Degrades gracefully offline.</p></div>
+      <div class="card"><div class="ic">🕸️</div><h3>TextRank</h3><p>Build a sentence graph with cosine-similarity edges over TF-IDF vectors, then run PageRank power iteration to rank sentences by centrality.</p></div>
+      <div class="card"><div class="ic">🏷️</div><h3>Keyword + tag</h3><p>Rank unigrams/bigrams by aggregate TF-IDF weight and slugify the top terms into auto-tags.</p></div>
     </div>
+    <pre class="code"><span class="c"># the real engine, exactly as shipped</span>
+from stash import Store, stash_item
+
+with Store("stash.db") as store:
+    result = stash_item(
+        store,
+        text=open("data/index_funds_talk.txt").read(),
+        title="Index funds explained simply",
+        num_sentences=3,
+        method="textrank",        <span class="c"># or "tfidf_baseline"</span>
+    )
+    print(result.item.summary)    <span class="c"># extractive, no API key needed</span>
+    print(result.item.tags)       <span class="c"># ['index', 'fund', 'broad', ...]</span></pre>
   </div>
 </section>
 
-<section id="features">
+<section id="use">
   <div class="wrap reveal">
-    <p class="eyebrow">02 — Engineering</p>
-    <h2>Clean architecture, production-ready.</h2>
+    <p class="eyebrow">02 — What's real</p>
+    <h2>Real engine, optional LLM.</h2>
     <div class="grid3">
-      <div class="card"><div class="ic">🧱</div><h3>SOLID + DI</h3><p>A ServiceContainer wires services; Protocols invert dependencies for testability.</p></div>
-      <div class="card"><div class="ic">🔐</div><h3>Auth</h3><p>JWT creation and password hashing; per-user saved videos.</p></div>
-      <div class="card"><div class="ic">❤️</div><h3>Observability</h3><p>Health and Prometheus metrics endpoints.</p></div>
-      <div class="card"><div class="ic">🧪</div><h3>Tested</h3><p>Unit + integration tests with coverage gates.</p></div>
-      <div class="card"><div class="ic">🐳</div><h3>Containerized</h3><p>Dockerized image, CI/CD via GitHub Actions, secret management.</p></div>
-      <div class="card"><div class="ic">☁️</div><h3>Azure</h3><p>Deployed to the cloud with auto-deploys from main.</p></div>
+      <div class="card"><div class="ic">🧮</div><h3>TextRank, implemented</h3><p>Cosine over TF-IDF sentence vectors + power iteration of the PageRank recurrence. Plus a TF-IDF top-sentence baseline.</p></div>
+      <div class="card"><div class="ic">🗄️</div><h3>SQLite store</h3><p>Saved items persist url, title, transcript, tags, summary, and saved-at; save/load round-trips are tested.</p></div>
+      <div class="card"><div class="ic">🤖</div><h3>LLM hook — optional</h3><p><code>llm_summarize</code> only runs if an API key is set; otherwise it returns <code>None</code> and the stored summary is the extractive one. Default behavior is fully offline.</p></div>
+      <div class="card"><div class="ic">📝</div><h3>Flexible ingestion</h3><p>Pass a transcript directly, read it from a file, or fetch a real one from a YouTube id when the network and package are available.</p></div>
+      <div class="card"><div class="ic">🧪</div><h3>Tested</h3><p>pytest suite: TextRank centrality on a constructed hub document, bounded summary length, keyword salience, store round-trip, full offline pipeline.</p></div>
+      <div class="card"><div class="ic">📦</div><h3>Runs offline</h3><p>Committed sample transcripts mean <code>python demo.py</code> works with no network and no key.</p></div>
     </div>
   </div>
 </section>
@@ -166,22 +204,20 @@
     <p class="eyebrow">03 — Stack</p>
     <h2>Built with.</h2>
     <div class="chips">
-      <span class="chip">⚡ FastAPI (Python 3.12)</span>
-      <span class="chip">🦙 Groq · Llama</span>
+      <span class="chip">🐍 Python 3.12</span>
+      <span class="chip">🔢 NumPy</span>
+      <span class="chip">📐 scikit-learn (TF-IDF)</span>
       <span class="chip">🗄 SQLite</span>
-      <span class="chip">🔐 JWT auth</span>
-      <span class="chip">🐳 Docker</span>
-      <span class="chip">🔁 GitHub Actions</span>
-      <span class="chip">📊 Prometheus</span>
-      <span class="chip">☁️ Azure</span>
+      <span class="chip">🧪 pytest</span>
+      <span class="chip">📥 youtube-transcript-api (optional)</span>
+      <span class="chip">🤖 LLM hook (optional)</span>
     </div>
   </div>
 </section>
 
 <footer>
   <div class="wrap">
-    Stash · an interactive project showcase, built from scratch.
-    Videos, transcripts, and summaries in the demo are sample data.
+    Stash · a real extractive-summarization engine in Python. The in-browser demo runs a faithful port of the same TextRank/TF-IDF algorithm; the LLM step is optional and off by default.
   </div>
 </footer>
 
@@ -189,41 +225,110 @@
   const io=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}})},{threshold:.15});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 
-  const LIB={
-    'youtu.be/dQw4-tech-talk':{t:'How transformers actually work',c:'DeepLearning Daily',dur:'18:42',e:'🧠',col:'linear-gradient(135deg,#2f3a8a,#5a6fd6)',
-      tr:'We start from attention as a soft dictionary lookup, then build multi-head attention, positional encodings, and the full encoder-decoder stack…',
-      sum:['Attention = weighted lookup over tokens (query·key→value).','Multi-head lets the model attend to several patterns at once.','Positional encodings inject word order into a set-based model.']},
-    'youtu.be/cook-15min':{t:'15-minute weeknight pasta',c:'Everyday Kitchen',dur:'12:09',e:'🍝',col:'linear-gradient(135deg,#b85f17,#e0a14b)',
-      tr:'Salt the water generously, start the sauce while pasta boils, reserve a cup of starchy water to emulsify…',
-      sum:['Boil pasta in well-salted water; cook 1 min under package time.','Build sauce in parallel; reserve starchy pasta water.','Toss off-heat with water + fat to emulsify a glossy sauce.']},
-    'youtu.be/money-basics':{t:'Index funds explained simply',c:'Plain Finance',dur:'09:55',e:'📈',col:'linear-gradient(135deg,#1f6b3a,#5aa86a)',
-      tr:'An index fund buys the whole market in one purchase, keeping fees low and diversification high…',
-      sum:['Index funds track a market basket instead of picking stocks.','Low fees + broad diversification beat most active funds long-term.','Automate contributions and hold for the long run.']},
+  /* ----- committed sample transcripts (mirror of data/*.txt) ----- */
+  const DOCS={
+    'How transformers actually work':
+      "Welcome back to the channel. Today we are going to talk about how transformer models actually work under the hood. The single most important idea in a transformer is the attention mechanism, which lets every token look at every other token and decide what matters. Attention works like a soft dictionary lookup: each token produces a query vector, every token produces a key vector, and the dot product between a query and a key tells you how relevant that token is. Those relevance scores are turned into weights with a softmax, and the weights are used to mix the value vectors together. Because this happens for all tokens in parallel, transformers are far faster to train than recurrent networks. Multi-head attention runs several of these attention operations at once, so the model can attend to different kinds of relationships in different subspaces. One head might track subject-verb agreement while another tracks long-range topic. A transformer has no built-in sense of word order, so we add positional encodings to the token embeddings to inject information about position. The encoder stacks many attention and feed-forward layers to build a rich representation of the input. The decoder uses masked attention so that each position can only attend to earlier positions when generating text. Residual connections and layer normalization keep the very deep stack stable during training. If you remember nothing else from this video, remember that attention is the core idea that makes transformers work. Thanks for watching and see you next time.",
+    'Index funds explained simply':
+      "Hey everyone, in this video I want to explain index funds in the simplest way I can. An index fund is a single investment that buys a whole basket of stocks tracking a market index, instead of trying to pick individual winners. The big advantage of an index fund is that it gives you broad diversification and very low fees at the same time. Because the fund just tracks the index, there is no expensive team of managers picking stocks, so the costs stay tiny. Over the long run, low fees and broad diversification are the two factors that matter most for your returns. Study after study shows that most actively managed funds fail to beat a simple market index over a long period. When you own an index fund you effectively own a small slice of hundreds of companies, which spreads out your risk. The best strategy for most people is to automate monthly contributions into a low-cost index fund and then leave it alone. Trying to time the market usually hurts your returns more than it helps. Compounding does the heavy lifting if you stay invested for decades rather than trading in and out. So the takeaway is simple: buy a broad low-cost index fund, contribute regularly, and hold for the long term. That is honestly most of what you need to know to start investing. Thanks for watching."
   };
-  const examples=document.getElementById('examples');
-  Object.keys(LIB).forEach(u=>{const b=document.createElement('button');b.textContent=LIB[u].t;b.dataset.u=u;examples.appendChild(b);});
-  const stashlist=document.getElementById('stashlist');
-  const urlIn=document.getElementById('url');
 
-  function add(u){
-    const v=LIB[u]||{t:'Saved video',c:'Unknown channel',dur:'—',e:'🎬',col:'linear-gradient(135deg,#555,#888)',tr:'Transcript will be fetched by the backend…',sum:null};
-    const el=document.createElement('div'); el.className='vid';
-    el.innerHTML=`<div class="head">
-        <div class="thumb" style="background:${v.col}">${v.e}<span class="dur">${v.dur}</span></div>
-        <div class="vmeta"><div class="vt">${v.t}</div><div class="vc">${v.c}</div><div class="turl">${u}</div>
-          <details class="tr"><summary>Transcript excerpt</summary><p>${v.tr}</p></details></div>
-      </div>
-      <div class="sumbox"><div class="lbl"><span class="spin"></span> Summarizing with Llama…</div></div>`;
-    stashlist.prepend(el);
-    const box=el.querySelector('.sumbox');
-    setTimeout(()=>{
-      box.innerHTML = v.sum ? `<div class="lbl">🤖 AI summary</div><ul>${v.sum.map(s=>`<li>${s}</li>`).join('')}</ul>`
-        : `<div class="lbl">🤖 AI summary</div><ul><li>Summary generated from the extracted transcript.</li></ul>`;
-    },1200);
+  const STOP=new Set(("a an and are as at be by for from has have he in is it its of on that the to was were will with this i you we they them their our your but or not no so if then than into out up down over under again about can just do does did done how what which who whom whose when where why all any each few more most other some such only own same too very s t don should now welcome channel video today going talk thanks watching subscribe like hey everyone guys hi let want really actually gonna okay yeah right know think see time way thing things lot").split(/\s+/));
+
+  /* ----- minimal TF-IDF + TextRank, faithful to the Python ----- */
+  function sentences(text){
+    return text.replace(/\s+/g,' ').trim().match(/[^.!?]+[.!?]+|\S+$/g)
+      ?.map(s=>s.trim()).filter(Boolean) || [];
   }
-  document.getElementById('save').addEventListener('click',()=>add(urlIn.value.trim()||'youtu.be/dQw4-tech-talk'));
-  examples.addEventListener('click',e=>{const b=e.target.closest('button[data-u]');if(!b)return;urlIn.value=b.dataset.u;add(b.dataset.u);});
-  add('youtu.be/dQw4-tech-talk');
+  function tokens(s){ return (s.toLowerCase().match(/[a-z][a-z'-]+/g)||[]).filter(w=>!STOP.has(w)); }
+  function ngrams(s){
+    const t=tokens(s), out=[...t];
+    for(let i=0;i<t.length-1;i++) out.push(t[i]+' '+t[i+1]);
+    return out;
+  }
+  function tfidf(docsTokens){
+    const N=docsTokens.length, df={};
+    docsTokens.forEach(t=>{ new Set(t).forEach(w=>df[w]=(df[w]||0)+1); });
+    const idf=w=>Math.log((1+N)/(1+(df[w]||0)))+1;     // sklearn smooth idf
+    return docsTokens.map(t=>{
+      const tf={}; t.forEach(w=>tf[w]=(tf[w]||0)+1);
+      const vec={}; let norm=0;
+      Object.keys(tf).forEach(w=>{ const v=tf[w]*idf(w); vec[w]=v; norm+=v*v; });
+      norm=Math.sqrt(norm)||1; Object.keys(vec).forEach(w=>vec[w]/=norm);
+      return vec;
+    });
+  }
+  function cosine(a,b){ let s=0; for(const w in a){ if(b[w]) s+=a[w]*b[w]; } return s; }
+
+  function textrank(sents){
+    const vecs=tfidf(sents.map(tokens)), n=sents.length;
+    if(n===1) return [1];
+    const sim=Array.from({length:n},()=>new Array(n).fill(0));
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++) if(i!==j) sim[i][j]=cosine(vecs[i],vecs[j]);
+    const col=new Array(n).fill(0);
+    for(let j=0;j<n;j++) for(let i=0;i<n;i++) col[j]+=sim[i][j];
+    const M=Array.from({length:n},()=>new Array(n).fill(0));
+    for(let j=0;j<n;j++) for(let i=0;i<n;i++) M[i][j]= col[j]>0 ? sim[i][j]/col[j] : 1/n;
+    let r=new Array(n).fill(1/n); const d=0.85;
+    for(let it=0;it<200;it++){
+      const nx=new Array(n).fill((1-d)/n); let diff=0;
+      for(let i=0;i<n;i++){ for(let j=0;j<n;j++) nx[i]+=d*M[i][j]*r[j]; }
+      for(let i=0;i<n;i++) diff+=Math.abs(nx[i]-r[i]);
+      r=nx; if(diff<1e-8) break;
+    }
+    const tot=r.reduce((a,b)=>a+b,0)||1; return r.map(x=>x/tot);
+  }
+  function tfidfBaseline(sents){
+    const vecs=tfidf(sents.map(tokens));
+    return vecs.map(v=>Object.values(v).reduce((a,b)=>a+b,0));
+  }
+  function keywords(text,k){
+    const sents=sentences(text), vecs=tfidf(sents.map(ngrams)), agg={};
+    vecs.forEach(v=>{ for(const w in v) agg[w]=(agg[w]||0)+v[w]; });
+    const ranked=Object.keys(agg).sort((a,b)=>agg[b]-agg[a]);
+    const out=[], seen=new Set();
+    for(const term of ranked){
+      const p=term.split(' ');
+      if(p.length===2 && p.every(x=>seen.has(x))) continue;
+      out.push(term); p.forEach(x=>seen.add(x));
+      if(out.length>=k) break;
+    }
+    return out;
+  }
+  const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+
+  /* ----- wire up the UI ----- */
+  const docSel=document.getElementById('doc');
+  Object.keys(DOCS).forEach(name=>{ const o=document.createElement('option');o.textContent=name;docSel.appendChild(o); });
+  const trEl=document.getElementById('transcript'), sumEl=document.getElementById('summary'),
+        kwEl=document.getElementById('keywords'), noteEl=document.getElementById('note'),
+        nEl=document.getElementById('n'), nval=document.getElementById('nval');
+  let method='textrank';
+
+  function render(){
+    const text=DOCS[docSel.value], sents=sentences(text), n=Math.min(+nEl.value,sents.length);
+    nval.textContent=nEl.value;
+    const scores = method==='textrank' ? textrank(sents) : tfidfBaseline(sents);
+    const order=sents.map((_,i)=>i).sort((a,b)=>scores[b]-scores[a]).slice(0,n).sort((a,b)=>a-b);
+    const pick=new Set(order);
+
+    trEl.innerHTML=sents.map((s,i)=>`<span class="s${pick.has(i)?' pick':''}">${s} </span>`).join('');
+    sumEl.innerHTML=order.map(i=>`<li>${sents[i]}<span class="sc">${scores[i].toFixed(4)}</span></li>`).join('');
+
+    const kws=keywords(text,8);
+    kwEl.innerHTML='<span style="font-size:.66rem;color:var(--muted);align-self:center;text-transform:uppercase;letter-spacing:.06em;font-family:JetBrains Mono,monospace">keywords →</span>'
+      + kws.map((k,i)=>`<span class="k${i<5?' tag':''}">${i<5?slug(k):k}</span>`).join('');
+    noteEl.textContent = method==='textrank'
+      ? 'Scores are PageRank centrality from power iteration over the TF-IDF similarity graph. First 5 keywords shown as auto-tag slugs.'
+      : 'Scores are summed TF-IDF term weight per sentence (the baseline). First 5 keywords shown as auto-tag slugs.';
+  }
+  docSel.addEventListener('change',render);
+  nEl.addEventListener('input',render);
+  document.querySelectorAll('#method button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#method button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); method=b.dataset.m; render();
+  }));
+  render();
 </script>
 </body>
 </html>

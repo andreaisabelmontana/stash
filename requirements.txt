@@ -1,0 +1,6 @@
+numpy>=1.24
+scikit-learn>=1.3
+
+# Optional, best-effort extras (the project runs fully without them):
+#   youtube-transcript-api   # fetch a real transcript from a video id
+#   openai                   # the optional LLM summary hook
